@@ -1,0 +1,26 @@
+﻿
+@{
+    ViewData["Title"] = "Hasta Seç";
+}
+
+
+
+<div class="col-md-10 container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h5>Hasta Seçme Sayfası</h5>
+        </div>
+        <div class="card-block">
+            <form class="form-material" asp-action="SelectingPatient" method="post">
+                <div class="form-group form-default">
+                    <input type="text" class="form-control" required name="tc" value="">
+                    <span class="form-bar"></span>
+                    <label class="float-label">Hasta TC</label>
+                </div>
+                <br />
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <button type="submit" class="btn waves-effect waves-light btn-primary"><i class="icofont icofont-check-circled"></i>Kaydet</button>
+            </form>
+        </div>
+    </div>
+</div>

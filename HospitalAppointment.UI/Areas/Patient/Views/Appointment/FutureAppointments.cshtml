@@ -1,0 +1,105 @@
+﻿
+@{
+    ViewData["Title"] = "Gelecek Randevular";
+}
+
+@using HospitalAppointment.Business.Interfaces
+@inject IUserService UserService
+@model List<HospitalAppointment.DTO.DTOs.Appointment.AppointmentsOfPatient>
+@Html.Partial("PartialDeleteModal", "Randevu Sil")
+
+@if (Model.Count != 0)
+{
+    <div class="card">
+        <div class="card-header">
+            <h5>Gelecek Randevularım</h5>
+        </div>
+        <div class="card-block table-border-style">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Randevu Tarihi</th>
+                            <th>Doktor Adı</th>
+                            <th>Hasta Kayıtçı</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var appointment in Model)
+                        {
+                            <tr>
+                                <td>@appointment.Date</td>
+                                <td>@GetAppointmentDoctorName(appointment.Doctor.Id)</td>
+                                @if (appointment.Registrar != null)
+                                {
+                                    <td>@GetAppointmentRegistrarName(appointment.Registrar.Id)</td>
+                                }
+                                else
+                                {
+                                    <td>Hasta kayıtçı yok</td>
+                                }
+                                <td><a class="btn waves-effect waves-light hor-grd btn-grd-danger openModal" data-modid="@appointment.Patient.Id" data-modtitle="@appointment.Date" data-toggle="modal" href="#myModal" style="width:85px;">İptal Et</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <h1>Kayıt Yok</h1>
+}
+
+@{
+    string GetAppointmentPatientName(int id)
+    {
+        var patient = UserService.GetById(id);
+        return patient.Name;
+    }
+
+    string GetAppointmentDoctorName(int id)
+    {
+        var doctor = UserService.GetById(id);
+        return doctor.Name;
+    }
+    string GetAppointmentRegistrarName(int id)
+    {
+        var patientRegistrar = UserService.GetById(id);
+        return patientRegistrar.Name;
+    }
+}
+
+@section Scritps
+{
+    <script>
+        $(".openModal").click(function() {
+            $(".modal-body>p.error").html("")
+            var appointmentDate = $(this).data("modtitle");
+            $(".modal-body>p.message").html(appointmentDate + "tarihli randevu silinsinmi");
+            /*  $(".modal-body>p.error").html("Dikkat sildiğiniz doktor bağlı poliklinikde silinecektir");*/
+            var patientId = $(this).data("modid");
+            $(".delModal").data("patientId", patientId);
+            $(".delModal").data("appointmentDateTime", appointmentDate);
+        });
+
+        $(".delModal").click(function() {
+            var patientIdLocal = $(this).data("patientId");
+            var appointmentDateTimeLocal = $(this).data("appointmentDateTime");
+            $.ajax({
+                type: "POST",
+                url: "/Patient/Appointment/RemoveAppointment/",
+                data: { appointmentDateTime: appointmentDateTimeLocal, patientId: patientIdLocal},
+                success: function(durum) {
+                    if (durum == true) {
+                        window.location.replace("/Patient/Appointment/FutureAppointments");
+                    } else {
+                        $(".modal-body>p.error").html("Bir hata oluştu");
+                    }
+                }
+            });
+        });
+
+    </script>
+}

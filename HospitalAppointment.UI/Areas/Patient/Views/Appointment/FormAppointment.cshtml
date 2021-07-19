@@ -1,0 +1,79 @@
+﻿
+@{
+    ViewData["Title"] = "Randevu";
+}
+
+
+@model HospitalAppointment.DTO.DTOs.Appointment.AppointmentUserDto
+
+<div class="col-md-10 container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h5>Randevu</h5>
+        </div>
+        <div class="card-block">
+            <form class="form-material" asp-action="CreateAppointment" method="post">
+                <input type="hidden" asp-for="UserId" value="@Model.UserId" />
+                <input type="hidden" asp-for="Name" value="@Model.Name" />
+                <input type="hidden" asp-for="SurName" value="@Model.SurName" />
+                <input type="hidden" asp-for="DepartmentId" value="@Model.DepartmentId" />
+                <input type="hidden" asp-for="DepartmentName" value="@Model.DepartmentName" />
+                <input type="hidden" asp-for="DoctorUserId" value="@Model.DoctorUserId" />
+                <input type="hidden" asp-for="DoctorUserName" value="@Model.DoctorUserName" />
+                <input type="hidden" asp-for="PoliclinicId" value="@Model.PoliclinicId" />
+                <input type="hidden" asp-for="PoliclinicName" value="@Model.PoliclinicName" />
+                <input type="hidden" asp-for="AppointmentDateTime" value="@Model.AppointmentDateTime" />
+                <div class="form-group form-default">
+                    <input type="text" disabled class="form-control" required value="@Model.Name @Model.SurName">
+                    <span class="form-bar"></span>
+                </div>
+                <div class="form-group form-default">
+                    <input type="text" disabled class="form-control" required value="@Model.DepartmentName">
+                    <span class="form-bar"></span>
+                </div>
+                <div class="form-group form-default">
+                    <input type="text" disabled class="form-control" required value="@Model.DoctorUserName - @Model.PoliclinicName">
+                    <span class="form-bar"></span>
+                </div>
+                <div class="form-group form-default" style="text-align: center">
+                    <button class="btn waves-effect waves-light btn-disabled disabled btn-block" value="@Model.AppointmentDateTime">@Model.AppointmentDateTime.ToShortDateString() (@GetDateBeTurkish(Model.AppointmentDateTime)) @Model.AppointmentDateTime.ToShortTimeString()</button>
+                    <span class="form-bar"></span>
+                </div>
+                <br />
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <button type="submit" class="btn waves-effect waves-light btn-success btn-block"><i class="icofont icofont-check-circled"></i>Kaydet</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@{
+    string GetDateBeTurkish(DateTime dateTime)
+    {
+        if (dateTime.DayOfWeek == DayOfWeek.Monday)
+        {
+            return "Pazartesi";
+        }
+        else if (dateTime.DayOfWeek == DayOfWeek.Tuesday)
+        {
+            return "Salı";
+        }
+        else if (dateTime.DayOfWeek == DayOfWeek.Wednesday)
+        {
+            return "Çarşamba";
+        }
+        else if (dateTime.DayOfWeek == DayOfWeek.Thursday)
+        {
+            return "Perşembe";
+        }
+        else if (dateTime.DayOfWeek == DayOfWeek.Friday)
+        {
+            return "Cuma";
+        }
+        else
+        {
+            return "";
+        }
+    }
+}

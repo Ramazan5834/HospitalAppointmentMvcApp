@@ -1,0 +1,41 @@
+﻿
+@{
+    ViewData["Title"] = "Reçetelerim";
+}
+@model List<HospitalAppointment.DTO.DTOs.Prescribe.PrescribeOfPatientDto>
+
+@if (Model.Count != 0)
+{
+    <div class="card">
+        <div class="card-header">
+            <h5>Reçetelerim</h5>
+        </div>
+        <div class="card-block table-border-style">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Hastalık Adı</th>
+                        <th>İlaç</th>
+                        <th>Açıklama</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var prescribe in Model)
+                    {
+                        <tr>
+                            <td>@prescribe.DiseaseName</td>
+                            <td>@prescribe.Medicine</td>
+                            <td>@prescribe.Description</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <h1>Kayıt Yok</h1>
+}

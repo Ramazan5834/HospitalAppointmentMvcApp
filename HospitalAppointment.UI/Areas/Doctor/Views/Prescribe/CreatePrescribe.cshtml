@@ -1,0 +1,49 @@
+﻿
+@{
+    ViewData["Title"] = "Reçete Oluştur";
+}
+
+@using HospitalAppointment.Business.Interfaces
+@inject IUserService UserService
+@model HospitalAppointment.DTO.DTOs.Prescribe.PrescribeAddDto
+
+<div class="col-md-10 container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h5>Reçete Oluştur</h5>
+        </div>
+        <div class="card-block">
+            <form class="form-material" asp-action="CreatePrescribe" method="post">
+                <input type="hidden" asp-for="DoctorId" value="@Model.DoctorId" />
+                <input type="hidden" asp-for="PatientId" value="@Model.PatientId" />
+                <div class="form-group form-default">
+                    <input type="text" class="form-control" required asp-for="DiseaseName">
+                    <span class="form-bar"></span>
+                    <label class="float-label">Hastalık Adı</label>
+                </div>
+                <div class="form-group form-default">
+                    <input type="text" class="form-control" required asp-for="Medicine">
+                    <span class="form-bar"></span>
+                    <label class="float-label">İlaç Adı</label>
+                </div>
+                <input type="hidden" class="form-control" required asp-for="Description" value="@CreateDescription(Model.DoctorId)">
+                <br />
+                <button type="submit" class="btn waves-effect waves-light btn-primary"><i class="icofont icofont-check-circled"></i>Kaydet</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@{
+    string GetDoctorNameAndSurName(int id)
+    {
+        var doctor = UserService.GetById(id);
+        return doctor.Name + " " + doctor.SurName;
+    }
+
+    string CreateDescription(int id)
+    {
+        var nameAndSurName = GetDoctorNameAndSurName(id);
+        return $"Doktor {nameAndSurName} tarafından oluşturuldu";
+    }
+}

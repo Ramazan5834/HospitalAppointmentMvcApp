@@ -1,0 +1,123 @@
+﻿
+@{
+    ViewData["Title"] = "Randevu Saat Dakikası";
+}
+
+
+@model HospitalAppointment.DTO.DTOs.Appointment.AppointmentUserDto
+@{
+    List<DateTime> existDateHourTimes = (List<DateTime>)ViewBag.existDateHourTimes;
+}
+<div class="col-md-10 container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h5>Randevu Saat  Seçme</h5>
+        </div>
+        <div class="card-block">
+            <form class="form-material" asp-action="FormAppointment">
+                <input type="hidden" asp-for="UserId" value="@Model.UserId" />
+                <input type="hidden" asp-for="Name" value="@Model.Name" />
+                <input type="hidden" asp-for="SurName" value="@Model.SurName" />
+                <input type="hidden" asp-for="DepartmentId" value="@Model.DepartmentId" />
+                <input type="hidden" asp-for="DepartmentName" value="@Model.DepartmentName" />
+                <input type="hidden" asp-for="DoctorUserId" value="@Model.DoctorUserId" />
+                <input type="hidden" asp-for="DoctorUserName" value="@Model.DoctorUserName" />
+                <input type="hidden" asp-for="PoliclinicId" value="@Model.PoliclinicId" />
+                <input type="hidden" asp-for="PoliclinicName" value="@Model.PoliclinicName" />
+                <div class="form-group form-default">
+                    <input type="text" disabled class="form-control" required="" value="@Model.Name @Model.SurName">
+                    <span class="form-bar"></span>
+                </div>
+                <div class="form-group form-default">
+                    <input type="text" disabled class="form-control" required="" value="@Model.DepartmentName">
+                    <span class="form-bar"></span>
+                </div>
+                <div class="form-group form-default">
+                    <input type="text" disabled class="form-control" required="" value="@Model.DoctorUserName - @Model.PoliclinicName">
+                    <span class="form-bar"></span>
+                </div>
+                <div class="form-group form-default" style="text-align: center">
+                    <button class="btn waves-effect waves-light btn-disabled disabled btn-block" value="@Model.AppointmentDateTime">@Model.AppointmentDateTime.ToShortDateString() (@GetDateBeTurkish(Model.AppointmentDateTime))</button>
+                    <span class="form-bar"></span>
+                </div>
+                <div class="form-group form-default" style="text-align: center">
+                    @{
+                        var dateYear = Model.AppointmentDateTime.Year;
+                        var dateMonth = Model.AppointmentDateTime.Month;
+                        var dateDay = Model.AppointmentDateTime.Day;
+                        List<DateTime> dateTimes = new List<DateTime>();
+                        for (int i = 9; i < 16; i++)
+                        {
+                            if (i == 12)
+                            {
+                                continue;
+                            }
+                            for (int j = 0; j < 46; j += 15)
+                            {
+                                DateTime dateTime = new DateTime(dateYear, dateMonth, dateDay, i, j, 0);
+                                if (existDateHourTimes.Contains(dateTime))
+                                {
+                                    <button class="btn waves-effect waves-light hor-grd btn-grd-danger btn-disabled disabled">@dateTime.ToShortTimeString()</button>
+                                }
+                                else
+                                {
+                                    <a style="color: white" class="selectTime btn waves-effect waves-light hor-grd btn-grd-info " value="@dateTime">@dateTime.ToShortTimeString()</a>
+                                }
+                            }
+                            <br />
+                            <br />
+                        }
+                    }
+                    <input id="appDateTime" type="hidden" asp-for="AppointmentDateTime" required />
+                    <span class="form-bar"></span>
+                </div>
+                <br />
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <button style="display: none; width:85px;" type="submit" class="next btn waves-effect waves-light btn-grd-inverse">İleri</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scritps
+{
+    <script>
+        $(".selectTime").mousedown(function () {
+            $('.selectTime').attr('class', 'selectTime btn waves-effect waves-light hor-grd btn-grd-info');
+            var dateTime = $(this).attr("value");
+            $("#appDateTime").attr("value", dateTime);
+            $(this).removeClass('btn-grd-info').addClass('btn-grd-success');
+            $(".next").show();
+        });
+    </script>
+}
+
+@{
+    string GetDateBeTurkish(DateTime dateTime)
+    {
+        if (dateTime.DayOfWeek == DayOfWeek.Monday)
+        {
+            return "Pazartesi";
+        }
+        else if (dateTime.DayOfWeek == DayOfWeek.Tuesday)
+        {
+            return "Salı";
+        }
+        else if (dateTime.DayOfWeek == DayOfWeek.Wednesday)
+        {
+            return "Çarşamba";
+        }
+        else if (dateTime.DayOfWeek == DayOfWeek.Thursday)
+        {
+            return "Perşembe";
+        }
+        else if (dateTime.DayOfWeek == DayOfWeek.Friday)
+        {
+            return "Cuma";
+        }
+        else
+        {
+            return "";
+        }
+    }
+}

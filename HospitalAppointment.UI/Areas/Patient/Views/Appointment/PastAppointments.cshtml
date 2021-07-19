@@ -1,0 +1,71 @@
+﻿
+@{
+    ViewData["Title"] = "Geçmiş Randevular";
+}
+@using HospitalAppointment.Business.Interfaces
+@inject IUserService UserService
+@model List<HospitalAppointment.DTO.DTOs.Appointment.AppointmentsOfPatient>
+
+@if (Model.Count != 0)
+{
+    <div class="card">
+        <div class="card-header">
+            <h5>Geçmiş Randevularım</h5>
+        </div>
+        <div class="card-block table-border-style">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Randevu Tarihi</th>
+                            <th>Doktor Adı</th>
+                            <th>Hasta Kayıtçı</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var appointment in Model)
+                        {
+                            <tr>
+                                <td>@appointment.Date</td>
+                                <td>@GetAppointmentDoctorName(appointment.Doctor.Id)</td>
+                                @if (appointment.Registrar != null)
+                                {
+                                    <td>@GetAppointmentRegistrarName(appointment.Registrar.Id)</td>
+                                }
+                                else
+                                {
+                                    <td>Hasta kayıtçı yok</td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <h1>Kayıt Yok</h1>
+}
+
+@{
+    string GetAppointmentPatientName(int id)
+    {
+        var patient = UserService.GetById(id);
+        return patient.Name;
+    }
+
+    string GetAppointmentDoctorName(int id)
+    {
+        var doctor = UserService.GetById(id);
+        return doctor.Name;
+    }
+    string GetAppointmentRegistrarName(int id)
+    {
+        var patientRegistrar = UserService.GetById(id);
+        return patientRegistrar.Name;
+    }
+
+
+}

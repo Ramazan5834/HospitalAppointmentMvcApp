@@ -1,0 +1,59 @@
+﻿
+@{
+    ViewData["Title"] = "Anasayfa";
+}
+@using HospitalAppointment.Business.Interfaces
+@inject IUserService UserService
+
+@model List<HospitalAppointment.DTO.DTOs.Appointment.AppointmentsOfPatientRegistrar>
+
+@if (Model.Count != 0)
+{
+    <div class="card">
+        <div class="card-header">
+            <h5>Verdiğim Randevular</h5>
+        </div>
+        <div class="card-block table-border-style">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Randevu Tarihi</th>
+                            <th>Hasta Adı</th>
+                            <th>Doktor Adı</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var appointment in Model)
+                        {
+                            <tr>
+                                <td>@appointment.Date</td>
+                                <td>@GetAppointmentPatientName(appointment.Patient.Id)</td>
+                                <td>@GetAppointmentDoctorName(appointment.Doctor.Id)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <h1>Kayıt Yok</h1>
+}
+@{
+    string GetAppointmentPatientName(int id)
+    {
+        var patient = UserService.GetById(id);
+        return patient.Name;
+    }
+
+    string GetAppointmentDoctorName(int id)
+    {
+        var doctor = UserService.GetById(id);
+        return doctor.Name;
+    }
+
+
+}

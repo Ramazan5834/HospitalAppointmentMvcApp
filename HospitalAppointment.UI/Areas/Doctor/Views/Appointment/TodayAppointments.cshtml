@@ -1,0 +1,115 @@
+﻿
+@{
+    ViewData["Title"] = "Gün İçi Randevular";
+}
+
+@{
+    ActiveDoctorDto activeDoctor = (ActiveDoctorDto)TempData["ActiveDoctor"];
+}
+@using HospitalAppointment.DTO.DTOs.Doctor
+@using HospitalAppointment.Business.Interfaces
+@inject IUserService UserService
+@model List<HospitalAppointment.DTO.DTOs.Appointment.AppointmentsOfDoctorDto>
+@Html.Partial("PartialDeleteModal", "Karalisteye Yolla")
+
+@if (Model.Count != 0)
+{
+    <div class="card">
+        <div class="card-header">
+            <h5>Gün İçi Randevular</h5>
+        </div>
+        <div class="card-block table-border-style">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Randevu Tarihi</th>
+                            <th>Hasta Adı</th>
+                            <th>Hasta Kayıtçı</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var appointment in Model)
+                        {
+                            <tr>
+                                <td>@appointment.Date</td>
+                                <td>@GetAppointmentPatientName(appointment.Patient.Id)</td>
+                                @if (appointment.Registrar != null)
+                                {
+                                    <td>@GetAppointmentRegistrarName(appointment.Registrar.Id)</td>
+                                }
+                                else
+                                {
+                                    <td>Hasta kayıtçı yok</td>
+                                }
+                                <td style="width:70px;"><a class="btn waves-effect waves-light btn-grd-success" asp-controller="Prescribe" asp-action="CreatePrescribe" asp-route-patientId="@appointment.Patient.Id" asp-route-doctorId="@activeDoctor.UserId" asp-route-appDateTime="@appointment.Date.ToString()" style="width:85px;">Onayla</a></td>
+                               
+                                <td style="width:70px;"><a class="btn waves-effect waves-light btn-grd-danger openModal" data-modpatientid="@appointment.Patient.Id" data-moddoctorid="@activeDoctor.UserId" data-modtitle="@appointment.Date" data-toggle="modal" href="#myModal" style="width:85px;">Gelmedi</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <h1>Kayıt Yok</h1>
+}
+
+@{
+    string GetAppointmentPatientName(int id)
+    {
+        var patient = UserService.GetById(id);
+        return patient.Name;
+    }
+
+    string GetAppointmentDoctorName(int id)
+    {
+        var doctor = UserService.GetById(id);
+        return doctor.Name;
+    }
+    string GetAppointmentRegistrarName(int id)
+    {
+        var patientRegistrar = UserService.GetById(id);
+        return patientRegistrar.Name;
+    }
+
+}
+
+@section Scritps
+{
+    <script>
+        $(".openModal").click(function () {
+            $(".modal-body>p.error").html("")
+            var appointmentDate = $(this).data("modtitle");
+            $(".modal-body>p.message").html(appointmentDate + "tarihli randevu karalisteye atılsınmı");
+            var patientId = $(this).data("modpatientid");
+            var doctorId = $(this).data("moddoctorid");
+            $(".delModal").data("patientid", patientId);
+            $(".delModal").data("doctorid", doctorId);
+            $(".delModal").data("appdatetime", appointmentDate);
+        });
+
+        $(".delModal").click(function () {
+            var patientIdLocal = $(this).data("patientid");
+            var doctorIdLocal = $(this).data("doctorid");
+            var appDateTimeLocal = $(this).data("appdatetime");
+         
+            $.ajax({
+                type: "POST",
+                url: "/Doctor/BlackList/CreateBlackList/",
+                data: { patientId: patientIdLocal, doctorId: doctorIdLocal, appDateTime: appDateTimeLocal},
+                success: function (durum) {
+                    if (durum == true) {
+                        window.location.replace("/Doctor/Home/Index");
+                    } else {
+                        $(".modal-body>p.error").html("Bir hata oluştu");
+                    }
+                }
+            });
+        });
+
+    </script>
+}

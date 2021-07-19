@@ -1,0 +1,95 @@
+﻿
+@{
+    ViewData["Title"] = "Randevu Günü seç";
+}
+
+@model HospitalAppointment.DTO.DTOs.Appointment.AppointmentUserDto
+@{
+    List<DateTime> dateDays = (List<DateTime>)ViewBag.DateDays;
+}
+<div class="col-md-10 container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h5>Randevu Günü Seçme Sayfası</h5>
+        </div>
+        <div class="card-block">
+            <form class="form-material" asp-action="SelectingDateHourTime" method="post">
+                <input type="hidden" asp-for="UserId" value="@Model.UserId" />
+                <input type="hidden" asp-for="Name" value="@Model.Name" />
+                <input type="hidden" asp-for="SurName" value="@Model.SurName" />
+                <input type="hidden" asp-for="DepartmentId" value="@Model.DepartmentId" />
+                <input type="hidden" asp-for="DepartmentName" value="@Model.DepartmentName" />
+                <input type="hidden" asp-for="DoctorUserId" value="@Model.DoctorUserId" />
+                <input type="hidden" asp-for="DoctorUserName" value="@Model.DoctorUserName" />
+                <input type="hidden" asp-for="PoliclinicId" value="@Model.PoliclinicId" />
+                <input type="hidden" asp-for="PoliclinicName" value="@Model.PoliclinicName" />
+                <div class="form-group form-default">
+                    <input type="text" disabled class="form-control" required value="@Model.Name @Model.SurName">
+                    <span class="form-bar"></span>
+                </div>
+                <div class="form-group form-default">
+                    <input type="text" disabled class="form-control" required value="@Model.DepartmentName">
+                    <span class="form-bar"></span>
+                </div>
+                <div class="form-group form-default">
+                    <input type="text" disabled class="form-control" required value="@Model.DoctorUserName - @Model.PoliclinicName">
+                    <span class="form-bar"></span>
+                </div>
+                <div class="form-group form-default" style="text-align: center">
+                    @foreach (var date in dateDays)
+                    {
+                        <a class="selectDay asd btn btn-mat waves-effect waves-light btn-success" value="@date.ToShortDateString()">@date.ToShortDateString()<br /> (@GetDateBeTurkish(date))</a>
+                    }
+                    <input id="appDateTime" type="hidden" asp-for="AppointmentDateTime" required/>
+                </div>
+                <br />
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <button style="display: none; width:85px; " type="submit" class="next btn waves-effect waves-light btn-grd-inverse">İleri</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scritps
+{
+    <script>
+
+        $(".selectDay").click(function () {
+            $('.selectDay').attr('class', 'selectDay btn btn-mat waves-effect waves-light btn-success');
+            var day = $(this).attr("value");
+            $("#appDateTime").attr("value", day);
+            $(this).removeClass('btn-success').addClass('btn-info');
+            $(".next").show();
+        });
+    </script>
+}
+
+@{
+    string GetDateBeTurkish(DateTime dateTime)
+    {
+        if (dateTime.DayOfWeek == DayOfWeek.Monday)
+        {
+            return "Pazartesi";
+        }
+        else if (dateTime.DayOfWeek == DayOfWeek.Tuesday)
+        {
+            return "Salı";
+        }
+        else if (dateTime.DayOfWeek == DayOfWeek.Wednesday)
+        {
+            return "Çarşamba";
+        }
+        else if (dateTime.DayOfWeek == DayOfWeek.Thursday)
+        {
+            return "Perşembe";
+        }
+        else if (dateTime.DayOfWeek == DayOfWeek.Friday)
+        {
+            return "Cuma";
+        }
+        else
+        {
+            return "";
+        }
+    }
+}

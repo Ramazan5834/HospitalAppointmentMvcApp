@@ -1,0 +1,84 @@
+﻿
+@{
+    ViewData["Title"] = "Hastalarım";
+}
+@model List<HospitalAppointment.DTO.DTOs.Patient.PatientListDto>
+@Html.Partial("PartialDeleteModal", "Hasta Sil")
+
+@if (Model.Count != 0)
+{
+    <div class="card">
+        <div class="card-header">
+            <h5>Hastalarım</h5>
+            <div class="card-header-right">
+                <a class="btn waves-effect waves-light hor-grd btn-grd-inverse" asp-action="CreatePatient">Yeni Hasta</a>
+            </div>
+        </div>
+        <div class="card-block table-border-style">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Hasta Adı Soyadı</th>
+                            <th>Telefonu</th>
+                            <th>Ana Adı</th>
+                            <th>Baba Adı</th>
+                            <th>EMail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var patientUser in Model)
+                        {
+                            <tr>
+                                <td>@patientUser.Name @patientUser.SurName</td>
+                                <td>@patientUser.Telephone</td>
+                                <td>@patientUser.Patient.MotherName</td>
+                                <td>@patientUser.Patient.FatherName</td>
+                                <td>@patientUser.Email</td>
+                                <td style="width:70px;"><a class="btn waves-effect waves-light btn-grd-success" asp-action="UpdatePatient" asp-route-patientId="@patientUser.Id" style="width:85px;">Düzenle</a></td>
+                                <td style="width:70px;"><a class="btn waves-effect waves-light btn-grd-danger openModal" data-modid="@patientUser.Id" data-modtitle="@patientUser.Name" data-toggle="modal" href="#myModal" style="width:85px;">Sil</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <h1>Kayıtlı Hasta Bulunamadı</h1>
+    <a class="btn btn-secondary" asp-action="CreatePatient">Yeni Hasta</a>
+}
+
+
+@section Scritps
+{
+    <script>
+        $(".openModal").click(function () {
+            $(".modal-body>p.error").html("")
+            var title = $(this).data("modtitle");
+            $(".modal-body>p.message").html("Hasta " + title + " silinsinmi");
+            $(".modal-body>p.error").html("Dikkat sildiğiniz Hastaya bağlı reçeteler,karalisteler ve randevularda silinecektir");
+            var id = $(this).data("modid");
+            $(".delModal").data("id", id);
+
+        });
+
+        $(".delModal").click(function () {
+            var id = $(this).data("id");
+            $.ajax({
+                type: "POST",
+                url: "/SuperAdmin/Patient/RemovePatient/" + id,
+                success: function (durum) {
+                    if (durum == true) {
+                        window.location.replace("/SuperAdmin/Patient/Index");
+                    } else {
+                        $(".modal-body>p.error").html("Bir hata oluştu");
+                    }
+                }
+            });
+        });
+
+    </script>
+}
